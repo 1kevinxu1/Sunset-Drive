@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <title>Asteroids</title>
+  </head>
+  <body>
+    <canvas style="border: 1px solid black; margin: 20px auto; display: block;"></canvas>
+    <script src="projection.js"></script>
+    <script>
+      var canvasEl = document.getElementsByTagName("canvas")[0];
+      var context = canvasEl.getContext("2d");
+      canvasEl.height = (window.innerHeight - 10) / 1.2;
+      canvasEl.width = (window.innerWidth - 10) / 2;
+      // var newGame = new Asteroids.Game(canvasEl.width, canvasEl.height);
+      // var newView = new Asteroids.GameView(ctx, newGame);
+      // newView.start();
+
+      var width         = canvasEl.width;
+      var height        = canvasEl.height;
+      var cameraHeight  = 10;
+      var cameraDepth   = 15;
+      var playerX       = 0;
+      var playerZ       = 0;
+      var roadWidth     = 10;
+      var segments      = [];
+
+      for(var n = 0 ; n < 500 ; n++) {
+        var color =  Math.floor(n)%2 ? '#696969' : 'white';
+        segments.push([n*200, (n+1)*200, color]);
+      };
+
+      function project (worldX, worldY, worldZ) {
+        var cameraX    = worldX - playerX;
+        var cameraY    = worldY - cameraHeight;
+        var cameraZ    = worldZ - playerZ;
+        var scale      = cameraDepth/cameraZ;
+        var x          = Math.round((width/2)  + (scale * cameraX  * width/2));
+        var y          = Math.round((height/2) - (scale * cameraY  * height/2));
+        var w          = Math.round((scale * roadWidth * width/2));
+        return [x, y, w]
+      };
+
+      function polygon (ctx, x1, y1, x2, y2, x3, y3, x4, y4, color) {
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.lineTo(x3, y3);
+        ctx.lineTo(x4, y4);
+        ctx.closePath();
+        ctx.fill();
+      };
+
+      function drawSegment (start, end, color) {
+        var start = project(0, 0, start);
+        var end   = project(0, 0, end);
+
+        var x1 = start[0];
+        var y1 = start[1];
+        var w1 = start[2];
+        var x2 = end[0];
+        var y2 = end[1];
+        var w2 = end[2];
+        polygon(context, x1-w1, y1, x1+w1, y1, x2+w2, y2, x2-w2, y2, color);
+      };
+
+      window.setInterval((function () {
+        context.clearRect(0, 0, canvasEl.width, canvasEl.height);
+        playerZ += 10;
+        // debugger;
+        // if (playerZ < 500) {
+        //   drawSegment(500 , 700, 'blue');
+        // }
+        // debugger;
+
+        var currentSegment = Math.floor(playerZ/200) % segments.length;
+        for(i = 0 ; i < 10 ; i++) {
+          n = i + currentSegment;
+          if (segments[n][0] > playerZ) {
+            drawSegment(segments[n][0], segments[n][1], segments[n][2]);
+          }
+        }
+      }).bind(this), 1000/60);
+      // debugger;
+    </script>
+  </body>
+</html>
