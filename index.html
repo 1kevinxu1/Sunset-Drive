@@ -6,7 +6,9 @@
   </head>
   <body>
     <canvas style="border: 1px solid black; margin: 20px auto; display: block;"></canvas>
-    <script src="projection.js"></script>
+    <!-- <script src="projection.js"></script> -->
+    <script src="jquery-2.1.1.js"></script>
+
     <script>
       var canvasEl = document.getElementsByTagName("canvas")[0];
       var context = canvasEl.getContext("2d");
@@ -18,12 +20,16 @@
 
       var width         = canvasEl.width;
       var height        = canvasEl.height;
-      var cameraHeight  = 10;
+      var cameraHeight  = 50;
       var cameraDepth   = 15;
       var playerX       = 0;
       var playerZ       = 0;
-      var roadWidth     = 10;
+      var roadWidth     = 60;
       var segments      = [];
+      var speed         = 10;
+      var acceleration  = -.5;
+      var maxSpeed      = 120;
+      var dx            = 0;
 
       for(var n = 0 ; n < 500 ; n++) {
         var color =  Math.floor(n)%2 ? '#696969' : 'white';
@@ -65,23 +71,70 @@
         polygon(context, x1-w1, y1, x1+w1, y1, x2+w2, y2, x2-w2, y2, color);
       };
 
+      var decelerate = false;
+      right = true;
       window.setInterval((function () {
+        if (acceleration < 0) {
+          speed += speed <= 0? 0 : acceleration;
+        } else {
+          speed += speed >= maxSpeed? 0 : acceleration;
+        }
+        playerX += speed*dx;
         context.clearRect(0, 0, canvasEl.width, canvasEl.height);
-        playerZ += 10;
-        // debugger;
-        // if (playerZ < 500) {
-        //   drawSegment(500 , 700, 'blue');
-        // }
-        // debugger;
+        playerZ += speed;
 
         var currentSegment = Math.floor(playerZ/200) % segments.length;
-        for(i = 0 ; i < 10 ; i++) {
+        for(i = 0 ; i < 20 ; i++) {
           n = i + currentSegment;
           if (segments[n][0] > playerZ) {
             drawSegment(segments[n][0], segments[n][1], segments[n][2]);
           }
         }
       }).bind(this), 1000/60);
+
+      var KEY = {
+        LEFT:  37,
+        UP:    38,
+        RIGHT: 39,
+        DOWN:  40,
+        A:     65,
+        D:     68,
+        S:     83,
+        W:     87
+      };
+
+      $(document).on('keydown', keyPressed);
+      $(document).on('keyup',  keyUnpressed);
+
+      function keyPressed(event) {
+        if (event.which === KEY.UP || event.which === KEY.W) {
+          acceleration = 2;
+        };
+        if (event.which === KEY.RIGHT || event.which === KEY.D) {
+          console.log("DOWN");
+          dx = 1/55;
+        };
+        if (event.which === KEY.LEFT) {
+          dx = -1/55;
+        };
+      };
+
+      function keyUnpressed(event) {
+        if (event.which === KEY.UP) {
+          acceleration = -.5;
+        };
+        if (event.which === KEY.RIGHT) {
+          if (dx === 1/55) {
+            dx = 0;
+          }
+        };
+        if (event.which === KEY.LEFT) {
+          if (dx === -1/55) {
+            dx = 0;
+          }
+        };
+      };
+
       // debugger;
     </script>
   </body>
