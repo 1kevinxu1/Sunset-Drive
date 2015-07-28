@@ -25,6 +25,12 @@
       var grassColor = Math.floor(n)%2 ? '#007700' : '#006600'
       this.segments.push([n*this.segmentLength, (n+1)*this.segmentLength, color, grassColor]);
     };
+    this.loadSunset();
+  };
+
+  Game.prototype.loadSunset = function() {
+    this.sunset = new Image();
+    this.sunset.src = 'sunset.jpg';
   };
 
   Game.KEYS = {
@@ -66,18 +72,24 @@
     };
   };
 
-  Game.prototype.render = function() {
+  Game.prototype.adjustPosition = function() {
     if (this.acceleration < 0) {
       this.speed += this.speed <= 0? 0 : this.acceleration;
     } else {
       this.speed += this.speed >= this.maxSpeed? 0 : this.acceleration;
     }
     this.playerX += this.speed*this.dx;
-    this.ctx.clearRect(0, 0, this.width, this.height);
     this.playerZ += this.speed;
+  };
+
+  Game.prototype.render = function() {
+    this.ctx.clearRect(0, 0, this.width, this.height);
+    this.adjustPosition();
+
+    this.ctx.drawImage(this.sunset, (-this.width/2) + (this.playerX*.1), (-this.height/2)-50, this.width*2, this.height*2);
 
     var currentSegment = Math.floor(this.playerZ/200) % this.segments.length;
-    for(i = 0 ; i < 20 ; i++) {
+    for(i = 0 ; i < 30 ; i++) {
       n = (i + currentSegment) % this.segments.length;
       if (this.segments[n][0] > this.playerZ) {
         Util.drawSegment(
