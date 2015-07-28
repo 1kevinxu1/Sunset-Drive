@@ -24,6 +24,10 @@
       var newGame = new Racer.Game(context, canvasEl.width, canvasEl.height);
       newGame.run();
 
+      $(document).on('keydown', newGame.keyPressed.bind(newGame));
+      $(document).on('keyup',  newGame.keyUnpressed.bind(newGame));
+
+
       // var width         = canvasEl.width;
       // var height        = canvasEl.height;
       // var cameraHeight  = 50;

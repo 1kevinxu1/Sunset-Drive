@@ -8,20 +8,22 @@
     this.ctx = context;
     this.width = xDim;
     this.height = yDim;
-    this.cameraHeight  = 50;
-    this.cameraDepth   = 15;
+    this.cameraHeight  = 30;
+    this.cameraDepth   = 12;
     this.playerX       = 0;
     this.playerZ       = 0;
-    this.roadWidth     = 60;
+    this.roadWidth     = 80;
     this.segments      = [];
     this.speed         = 10;
     this.acceleration  = -.5;
     this.maxSpeed      = 120;
     this.dx            = 0;
     this.segments      = [];
-    for(var n = 0 ; n < 500 ; n++) {
-      var color =  Math.floor(n)%2 ? '#696969' : 'white';
-      this.segments.push([n*200, (n+1)*200, color]);
+    this.segmentLength = 200;
+    for(var n = 0 ; n < 800 ; n++) {
+      var color =  Math.floor(n)%3 ? '#696969' : 'white';
+      var grassColor = Math.floor(n)%2 ? '#007700' : '#006600'
+      this.segments.push([n*this.segmentLength, (n+1)*this.segmentLength, color, grassColor]);
     };
   };
 
@@ -36,15 +38,11 @@
     W:     87
   };
 
-  $(document).on('keydown', Game.keyPressed);
-  $(document).on('keyup',  Game.keyUnpressed);
-
-  Game.keyPressed = function(event) {
+  Game.prototype.keyPressed = function(event) {
     if (event.which === Game.KEYS.UP || event.which === Game.KEYS.W) {
       this.acceleration = 2;
     };
     if (event.which === Game.KEYS.RIGHT || event.which === Game.KEYS.D) {
-      console.log("DOWN");
       this.dx = 1/55;
     };
     if (event.which === Game.KEYS.LEFT || event.which === Game.KEYS.A) {
@@ -52,17 +50,17 @@
     };
   };
 
-  Game.keyUnpressed = function(event) {
+  Game.prototype.keyUnpressed = function(event) {
     if (event.which === Game.KEYS.UP || event.which === Game.KEYS) {
       this.acceleration = -.5;
     };
     if (event.which === Game.KEYS.RIGHT) {
-      if (dx === 1/55) {
+      if (this.dx === 1/55) {
         this.dx = 0;
       }
     };
     if (event.which === Game.KEYS.LEFT) {
-      if (dx === -1/55) {
+      if (this.dx === -1/55) {
         this.dx = 0;
       }
     };
@@ -75,15 +73,20 @@
       this.speed += this.speed >= this.maxSpeed? 0 : this.acceleration;
     }
     this.playerX += this.speed*this.dx;
-    // this.ctx.clearRect(0, 0, this.width, this.height);
+    this.ctx.clearRect(0, 0, this.width, this.height);
     this.playerZ += this.speed;
 
     var currentSegment = Math.floor(this.playerZ/200) % this.segments.length;
     for(i = 0 ; i < 20 ; i++) {
-      n = i + currentSegment;
+      n = (i + currentSegment) % this.segments.length;
       if (this.segments[n][0] > this.playerZ) {
-        debugger;
-        Util.drawSegment(this, this.segments[n][0], this.segments[n][1], this.segments[n][2]);
+        Util.drawSegment(
+          this,
+          this.segments[n][0],
+          this.segments[n][1],
+          this.segments[n][2],
+          this.segments[n][3]
+        )
       }
     }
   };
