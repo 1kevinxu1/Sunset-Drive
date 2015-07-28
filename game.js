@@ -82,12 +82,7 @@
     this.playerZ += this.speed;
   };
 
-  Game.prototype.render = function() {
-    this.ctx.clearRect(0, 0, this.width, this.height);
-    this.adjustPosition();
-
-    this.ctx.drawImage(this.sunset, (-this.width/2) + (this.playerX*.1), (-this.height/2)-50, this.width*2, this.height*2);
-
+  Game.prototype.drawRoad = function() {
     var currentSegment = Math.floor(this.playerZ/200) % this.segments.length;
     for(i = 0 ; i < 30 ; i++) {
       n = (i + currentSegment) % this.segments.length;
@@ -101,6 +96,23 @@
         )
       }
     }
+  };
+
+  Game.prototype.drawBackground = function() {
+    this.ctx.drawImage(
+      this.sunset,
+      (this.playerX*-.1) -this.width/2,
+      -this.height/2 -50,
+      this.width*2,
+      this.height*2
+    );
+  }
+
+  Game.prototype.render = function() {
+    this.ctx.clearRect(0, 0, this.width, this.height);
+    this.adjustPosition();
+    this.drawBackground();
+    this.drawRoad();
   };
 
   Game.prototype.run = function() {
