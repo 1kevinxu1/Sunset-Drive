@@ -8,25 +8,34 @@
     this.ctx = context;
     this.width = xDim;
     this.height = yDim;
-    this.cameraHeight  = 30;
-    this.cameraDepth   = 12;
-    this.playerX       = 0;
-    this.playerZ       = 0;
-    this.roadWidth     = 80;
-    this.boundaries    = [-160, 160];
-    this.segments      = [];
-    this.speed         = 10;
-    this.acceleration  = -.5;
-    this.maxSpeed      = 120;
-    this.dx            = 0;
-    this.segments      = [];
-    this.segmentLength = 200;
-    for(var n = 0 ; n < 800 ; n++) {
+    this.cameraHeight    = 30;
+    this.cameraDepth     = 12;
+    this.playerX         = 0;
+    this.playerZ         = 0;
+    this.roadWidth       = 80;
+    this.boundaries      = [-160, 160];
+    this.segments        = [];
+    this.speed           = 10;
+    this.acceleration    = -.5;
+    this.maxSpeed        = 120;
+    this.dx              = 0;
+    this.segments        = [];
+    this.segmentLength   = 200;
+    this.drawDistance    = 30;
+    this.sprites         = [];
+    this.spriteWidth     = 20;
+    this.spriteLength    = 250;
+    this.numberOfSprites = 1;
+    for (var n = 0 ; n < 800 ; n++) {
       var color =  Math.floor(n)%3 ? '#696969' : 'white';
       var grassColor = Math.floor(n)%2 ? '#007700' : '#006600'
       this.segments.push([n*this.segmentLength, (n+1)*this.segmentLength, color, grassColor]);
     };
+    // for (var n = 0; n < 1 ; n++) {
+    //   this.sprites.push([Util.getRandomInt(-this.roadWidth), 0, n*500])
+    // }
     this.loadImages();
+    Util.generateSprites(this);
   };
 
   Game.prototype.loadImages = function() {
@@ -102,7 +111,7 @@
 
   Game.prototype.drawRoad = function() {
     var currentSegment = Math.floor(this.playerZ/200) % this.segments.length;
-    for(i = 0 ; i < 50 ; i++) {
+    for(i = 0 ; i < this.drawDistance ; i++) {
       n = (i + currentSegment) % this.segments.length;
       if (this.segments[n][0] > this.playerZ) {
         Util.drawSegment(
@@ -114,6 +123,10 @@
         )
       }
     }
+  };
+
+  Game.prototype.drawSprites = function() {
+    Util.drawSprite(this);
   };
 
   Game.prototype.drawBackground = function() {
@@ -141,6 +154,7 @@
     this.adjustPosition();
     this.drawBackground();
     this.drawRoad();
+    Util.drawSprite(this);
     this.drawCar();
   };
 
