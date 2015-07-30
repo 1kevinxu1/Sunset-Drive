@@ -9,8 +9,8 @@ Sunset Racer is a game built on entirely vanilla javascript, canvas, and some tr
 It was a fun little project to explore the capabilities of HTML5's canvas without
 the help of any existing web frameworks. To help myself get started, I used the following resources:
 
-[Lou's pseudo 3d page][lou's page]
-[Wikipedia article on orthogonal projection matrix][Wikipedia]
+[Lou's pseudo 3d page][lou's page]  
+[Wikipedia article on orthogonal projection matrix][Wikipedia]  
 [CodeIncomplete's project reference][CodeIncomplete]
 
 
