@@ -8,8 +8,8 @@
     this.ctx = context;
     this.width = xDim;
     this.height = yDim;
-    this.cameraHeight    = 30;
-    this.cameraDepth     = 12;
+    this.cameraHeight    = 50;
+    this.cameraDepth     = 10;
     this.playerX         = 0;
     this.playerZ         = 0;
     this.roadWidth       = 80;
@@ -17,16 +17,19 @@
     this.segments        = [];
     this.speed           = 10;
     this.acceleration    = -.5;
-    this.maxSpeed        = 120;
+    this.maxSpeed        = 80;
     this.dx              = 0;
     this.segments        = [];
+    this.numOfSegments   = 2000;
     this.segmentLength   = 200;
-    this.drawDistance    = 30;
+    this.drawDistance    = 50;
     this.sprites         = [];
     this.spriteWidth     = 20;
     this.spriteLength    = 250;
-    this.numberOfSprites = 10;
-    for (var n = 0 ; n < 800 ; n++) {
+    this.numberOfSprites = 80;
+    this.gameOver        = false;
+    this.finalGameState       = null;
+    for (var n = 0 ; n < this.numOfSegments ; n++) {
       var color =  Math.floor(n)%3 ? '#696969' : 'white';
       var grassColor = Math.floor(n)%2 ? '#007700' : '#006600'
       this.segments.push([n*this.segmentLength, (n+1)*this.segmentLength, color, grassColor]);
@@ -77,17 +80,29 @@
     };
   };
 
-  Game.prototype.adjustPosition = function() {
-    if (this.acceleration < 0) {
-      this.speed += this.speed <= 0? 0 : this.acceleration;
-    } else {
-      if (this.onGrass) {
-        var slowDown = -5;
-      } else {
-        var slowDown = 0;
-      }
-      this.speed += this.speed >= this.maxSpeed? slowDown : this.acceleration;
+  Game.prototype.collisionDetected = function(color) {
+    if (color === Util.COLORS.STOP) {
+      this.speed = 20;
+    } else if (color === Util.COLORS.GO) {
+      this.speed += 80;
+    } else if (color === Util.COLORS.DEAD) {
+      this.gameOver  = true;
+      this.finalGameState = "YOU LOSE";
     }
+  };
+
+  Game.prototype.adjustPosition = function() {
+    //simulate drag
+    var slowDown = this.onGrass ? -5 : -this.speed/this.maxSpeed;
+    if (this.speed >= this.maxSpeed) {
+      this.speed += slowDown;
+    } else {
+      if (this.speed < 0) {
+        this.speed = 0;
+      } else {
+        this.speed += this.acceleration;
+      };
+    };
     var xPos = this.playerX + this.speed*this.dx;
     if (xPos > this.boundaries[0] && xPos < this.boundaries[1]) {
       this.playerX = xPos;
@@ -97,7 +112,7 @@
       this.maxSpeed = 30;
     } else {
       this.onGrass = false;
-      this.maxSpeed = 120;
+      this.maxSpeed = 80;
     }
     this.playerZ += this.speed;
   };
@@ -118,8 +133,9 @@
     }
   };
 
-  Game.prototype.drawSprites = function() {
-    Util.drawSprite(this);
+  Game.prototype.drawSpritesAndDetectCollisions = function() {
+    Util.drawSprites(this);
+    Util.detectCollisions(this);
   };
 
   Game.prototype.drawBackground = function() {
@@ -143,15 +159,28 @@
   };
 
   Game.prototype.render = function() {
+    console.log(this.acceleration);
+    console.log(this.speed);
     this.ctx.clearRect(0, 0, this.width, this.height);
     this.adjustPosition();
     this.drawBackground();
     this.drawRoad();
-    Util.drawSprite(this);
+    this.drawSpritesAndDetectCollisions();
     this.drawCar();
+    if (this.gameOver) {
+      this.endGame();
+    }
   };
 
   Game.prototype.run = function() {
-    setInterval(this.render.bind(this), 1000/60)
+    this.gameLoop = setInterval(this.render.bind(this), 1000/60);
   };
+
+  Game.prototype.endGame = function() {
+    clearInterval(this.gameLoop);
+    this.ctx.clearRect(0, 0, this.width, this.height);
+    this.ctx.font = "48px serif";
+    this.ctx.fillStyle = 'black';
+    this.ctx.fillText(this.finalGameState, this.width/3.1, this.height/2);
+  }
 })();
