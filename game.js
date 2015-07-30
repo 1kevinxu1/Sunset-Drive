@@ -5,9 +5,9 @@
   };
 
  var Game = Racer.Game = function(context, xDim, yDim) {
-    this.ctx = context;
-    this.width = xDim;
-    this.height = yDim;
+    this.ctx             = context;
+    this.width           = xDim;
+    this.height          = yDim;
     this.cameraHeight    = 50;
     this.cameraDepth     = 10;
     this.playerX         = 0;
@@ -26,9 +26,10 @@
     this.sprites         = [];
     this.spriteWidth     = 20;
     this.spriteLength    = 250;
-    this.numberOfSprites = 80;
+    this.numberOfSprites = 100;
     this.gameOver        = false;
-    this.finalGameState       = null;
+    this.finalGameState  = null;
+    this.startTime       = new Date().getTime();
     for (var n = 0 ; n < this.numOfSegments ; n++) {
       var color =  Math.floor(n)%3 ? '#696969' : 'white';
       var grassColor = Math.floor(n)%2 ? '#007700' : '#006600'
@@ -82,12 +83,15 @@
 
   Game.prototype.collisionDetected = function(color) {
     if (color === Util.COLORS.STOP) {
-      this.speed = 20;
+      this.speed = 5;
     } else if (color === Util.COLORS.GO) {
       this.speed += 80;
     } else if (color === Util.COLORS.DEAD) {
       this.gameOver  = true;
       this.finalGameState = "YOU LOSE";
+    } else if (color === Util.COLORS.WIN) {
+      this.gameOver  = true;
+      this.finalGameState = "YOU WIN";
     }
   };
 
@@ -158,15 +162,19 @@
     );
   };
 
+  Game.prototype.drawTimer = function() {
+    this.ctx.fillStyle = 'black';
+    this.ctx.fillText("Your Time: " + (new Date().getTime() - this.startTime)/1000, 10, 20);
+  }
+
   Game.prototype.render = function() {
-    console.log(this.acceleration);
-    console.log(this.speed);
     this.ctx.clearRect(0, 0, this.width, this.height);
     this.adjustPosition();
     this.drawBackground();
     this.drawRoad();
     this.drawSpritesAndDetectCollisions();
     this.drawCar();
+    this.drawTimer();
     if (this.gameOver) {
       this.endGame();
     }
@@ -182,5 +190,19 @@
     this.ctx.font = "48px serif";
     this.ctx.fillStyle = 'black';
     this.ctx.fillText(this.finalGameState, this.width/3.1, this.height/2);
+    if (this.finalGameState === "YOU WIN") {
+      this.ctx.fillText(
+        "Final Time: " + (new Date().getTime() - this.startTime)/1000,
+        this.width/3.7,
+        (this.height/2) + 50
+      );
+    } else {
+      this.ctx.font = "20px serif"
+      this.ctx.fillText(
+        "In the words of my parents: 'You can do better.'",
+        this.width/4,
+        this.height/2 + 50
+      )
+    }
   }
 })();

@@ -6,7 +6,8 @@
   Util.COLORS = {
     STOP: '#FF0000',
     GO:   '#00FF00',
-    DEAD: '#000000'
+    DEAD: '#000000',
+    WIN:  '#FFFFFF'
   }
 
   Util.project = function(game, worldX, worldY, worldZ, objectWidth) {
@@ -44,10 +45,25 @@
         Util.detectCollisions(game, x, z, color);
       };
     };
+    Util.checkForFinish(game);
   };
 
   Util.checkForFinish = function(game) {
-    if ((game.playerZ > (game.numOfSegments-200)*segmentLength
+    var z = (game.numOfSegments-100)*game.segmentLength;
+    if (game.playerZ < z && z - game.playerZ < game.segmentLength*game.drawDistance) {
+      var start = Util.project(game, 0, 0, z, game.roadWidth);
+      var end = Util.project(game, 0, 0, z+game.spriteLength, game.roadWidth);
+      var x1 = start[0];
+      var y1 = start[1];
+      var w1 = start[2];
+      var x2 = end[0];
+      var y2 = end[1];
+      var w2 = end[2];
+      Util.polygon(game.ctx, x1-w1, y1, x1+w1, y1, x2+w2, y2, x2-w2, y2, Util.COLORS.WIN);
+    };
+    if (game.playerZ > z) {
+      game.collisionDetected(Util.COLORS.WIN);
+    }
   };
 
   Util.renderSprite = function(game, x, y, z, color) {
