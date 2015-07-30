@@ -1,3 +1,8 @@
+body {
+  margin: 0px;
+  overflow-y: hidden;
+}
+
 #Instructions {
   float: left;
   width: 500px;
@@ -6,6 +11,7 @@
 }
 
 canvas {
+  margin: 10px;
   border: 1px solid black;
   float:left;
   display: block;
@@ -24,4 +30,24 @@ canvas {
 #reset:hover {
   background-color: #004d19;
   cursor: pointer;
+}
+
+.footer {
+  clear: left;
+  display: block;
+  background-color: #222;
+  margin: 0px;
+  position: absolute;
+  bottom:0px;
+  width: 100%;
+}
+
+.footer h3 {
+  font-size: 12px;
+  font-weight: normal;
+  color: #999;
+  display: block;
+  float: left;
+  margin: 20px;
+  margin-right: 100px;
 }
