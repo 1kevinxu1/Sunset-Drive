@@ -33,7 +33,6 @@
       var y = currentSprite[1];
       var z = currentSprite[2];
       if (game.playerZ < z && z - game.playerZ < game.segmentLength*game.drawDistance) {
-
         var start = Util.project(game, x, y, z, game.spriteWidth);
         var end   = Util.project(game, x, y, z+game.spriteLength, game.spriteWidth);
 
@@ -49,19 +48,29 @@
     };
   };
 
+  Util.loadImages = function(game) {
+    game.sunset = new Image();
+    game.car = new Image();
+    game.sunset.src = 'sunset.jpg';
+    game.car.src = 'porsche.png';
+  };
+
   Util.generateSprites = function(game) {
-    // for (i = 0; i < number; i++) {
+    for (i = 0; i < game.numberOfSprites; i++) {
       var x = Util.getRandomInt(
         -game.roadWidth + game.spriteWidth,
         game.roadWidth - game.spriteWidth
       );
       var y = 0;
-      var z = 10000;
+      var z = 600*game.segmentLength*i/game.numberOfSprites + 10000;
 
       game.sprites.push([x, y, z]);
-
-    // }
+    }
   };
+
+  Util.overlap = function(game) {
+    
+  }
 
   Util.drawSegment = function(game, start, end, color, grassColor) {
     var start = Util.project(game, 0, 0, start, game.roadWidth);

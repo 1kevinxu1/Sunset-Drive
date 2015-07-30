@@ -25,7 +25,7 @@
     this.sprites         = [];
     this.spriteWidth     = 20;
     this.spriteLength    = 250;
-    this.numberOfSprites = 1;
+    this.numberOfSprites = 10;
     for (var n = 0 ; n < 800 ; n++) {
       var color =  Math.floor(n)%3 ? '#696969' : 'white';
       var grassColor = Math.floor(n)%2 ? '#007700' : '#006600'
@@ -34,15 +34,8 @@
     // for (var n = 0; n < 1 ; n++) {
     //   this.sprites.push([Util.getRandomInt(-this.roadWidth), 0, n*500])
     // }
-    this.loadImages();
+    Util.loadImages(this);
     Util.generateSprites(this);
-  };
-
-  Game.prototype.loadImages = function() {
-    this.sunset = new Image();
-    this.car = new Image();
-    this.sunset.src = 'sunset.jpg';
-    this.car.src = 'porsche.png';
   };
 
   Game.KEYS = {
