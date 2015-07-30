@@ -13,6 +13,7 @@
     this.playerX       = 0;
     this.playerZ       = 0;
     this.roadWidth     = 80;
+    this.boundaries    = [-160, 160];
     this.segments      = [];
     this.speed         = 10;
     this.acceleration  = -.5;
@@ -25,12 +26,14 @@
       var grassColor = Math.floor(n)%2 ? '#007700' : '#006600'
       this.segments.push([n*this.segmentLength, (n+1)*this.segmentLength, color, grassColor]);
     };
-    this.loadSunset();
+    this.loadImages();
   };
 
-  Game.prototype.loadSunset = function() {
+  Game.prototype.loadImages = function() {
     this.sunset = new Image();
+    this.car = new Image();
     this.sunset.src = 'sunset.jpg';
+    this.car.src = 'porsche.png';
   };
 
   Game.KEYS = {
@@ -46,7 +49,7 @@
 
   Game.prototype.keyPressed = function(event) {
     if (event.which === Game.KEYS.UP || event.which === Game.KEYS.W) {
-      this.acceleration = 2;
+      this.acceleration = .5;
     };
     if (event.which === Game.KEYS.RIGHT || event.which === Game.KEYS.D) {
       this.dx = 1/55;
@@ -76,15 +79,30 @@
     if (this.acceleration < 0) {
       this.speed += this.speed <= 0? 0 : this.acceleration;
     } else {
-      this.speed += this.speed >= this.maxSpeed? 0 : this.acceleration;
+      if (this.onGrass) {
+        var slowDown = -5;
+      } else {
+        var slowDown = 0;
+      }
+      this.speed += this.speed >= this.maxSpeed? slowDown : this.acceleration;
     }
-    this.playerX += this.speed*this.dx;
+    var xPos = this.playerX + this.speed*this.dx;
+    if (xPos > this.boundaries[0] && xPos < this.boundaries[1]) {
+      this.playerX = xPos;
+    }
+    if (xPos > this.roadWidth - 12 || xPos < -this.roadWidth + 12) {
+      this.onGrass = true;
+      this.maxSpeed = 30;
+    } else {
+      this.onGrass = false;
+      this.maxSpeed = 120;
+    }
     this.playerZ += this.speed;
   };
 
   Game.prototype.drawRoad = function() {
     var currentSegment = Math.floor(this.playerZ/200) % this.segments.length;
-    for(i = 0 ; i < 30 ; i++) {
+    for(i = 0 ; i < 50 ; i++) {
       n = (i + currentSegment) % this.segments.length;
       if (this.segments[n][0] > this.playerZ) {
         Util.drawSegment(
@@ -108,11 +126,22 @@
     );
   }
 
+  Game.prototype.drawCar = function() {
+    this.ctx.drawImage(
+      this.car,
+      this.width/4 - 10,
+      this.height/2 + 50,
+      this.roadWidth * 4,
+      this.roadWidth * 2.6
+    );
+  };
+
   Game.prototype.render = function() {
     this.ctx.clearRect(0, 0, this.width, this.height);
     this.adjustPosition();
     this.drawBackground();
     this.drawRoad();
+    this.drawCar();
   };
 
   Game.prototype.run = function() {
