@@ -104,14 +104,6 @@
     }
   };
 
-  Util.generateSegments = function(game) {
-    for (var n = 0 ; n < game.numOfSegments ; n++) {
-      var color =  Math.floor(n)%3 ? '#696969' : 'white';
-      var grassColor = Math.floor(n)%2 ? '#007700' : '#006600'
-      game.segments.push([n*game.segmentLength, (n+1)*game.segmentLength, color, grassColor]);
-    };
-  }
-
   Util.detectCollisions = function(game, x, z, color) {
     if ((game.playerZ > z-400 && game.playerZ < z-400+game.spriteLength) &&
         (game.playerX > x-(game.spriteWidth) && game.playerX < x+(game.spriteWidth))) {

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<!-- saved from url=(0059)file:///Users/KevinXu/Desktop/Javascript%20Racer/index.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+    <title>Sunset Drive</title>
+  </head>
+  <body>
+    <div class="Instructions" style="float: left; width: 600px; display: block">
+      <h1>Instructions:</h1>
+      Press the arrow keys to drive. Avoid red and black squares: running over
+      red squares will slow you significantly and running over black squares will
+      cause you to lose immediately. However, try to run over the green squares
+      for a little speed boost! Try to cross the finish line in the least time
+      possible. Can you beat your friends?
+    </div>
+    <canvas style="border: 1px solid black;float:left; display: block;" height="331" width="635"></canvas>
+    <!-- <script src="projection.js"></script> -->
+    <script src="./Sunset Drive_files/jquery-2.1.1.js"></script>
+    <script src="./Sunset Drive_files/util.js"></script>
+    <script src="./Sunset Drive_files/game.js"></script>
+
+
+    <script>
+      var canvasEl = document.getElementsByTagName("canvas")[0];
+      var context = canvasEl.getContext("2d");
+      canvasEl.height = (window.innerHeight - 10) / 1.2;
+      canvasEl.width = (window.innerWidth - 10) / 2;
+
+      var newGame = new Racer.Game(context, canvasEl.width, canvasEl.height);
+      newGame.run();
+
+      $(document).on('keydown', newGame.keyPressed.bind(newGame));
+      $(document).on('keyup',  newGame.keyUnpressed.bind(newGame));
+    </script>
+  
+
+</body></html>

@@ -15,8 +15,8 @@
     this.roadWidth       = 80;
     this.boundaries      = [-160, 160];
     this.segments        = [];
-    this.speed           = 0;
-    this.acceleration    = 0;
+    this.speed           = 10;
+    this.acceleration    = -.5;
     this.maxSpeed        = 80;
     this.dx              = 0;
     this.segments        = [];
@@ -30,9 +30,16 @@
     this.gameOver        = false;
     this.finalGameState  = null;
     this.startTime       = new Date().getTime();
+    for (var n = 0 ; n < this.numOfSegments ; n++) {
+      var color =  Math.floor(n)%3 ? '#696969' : 'white';
+      var grassColor = Math.floor(n)%2 ? '#007700' : '#006600'
+      this.segments.push([n*this.segmentLength, (n+1)*this.segmentLength, color, grassColor]);
+    };
+    // for (var n = 0; n < 1 ; n++) {
+    //   this.sprites.push([Util.getRandomInt(-this.roadWidth), 0, n*500])
+    // }
     Util.loadImages(this);
     Util.generateSprites(this);
-    Util.generateSegments(this);
   };
 
   Game.KEYS = {
@@ -90,12 +97,11 @@
 
   Game.prototype.adjustPosition = function() {
     //simulate drag
-    console.log(this.speed);
     var slowDown = this.onGrass ? -5 : -this.speed/this.maxSpeed;
     if (this.speed >= this.maxSpeed) {
       this.speed += slowDown;
     } else {
-      if (this.acceleration < 0 && this.speed <= 0) {
+      if (this.speed < 0) {
         this.speed = 0;
       } else {
         this.speed += this.acceleration;
@@ -157,7 +163,6 @@
   };
 
   Game.prototype.drawTimer = function() {
-    this.ctx.font = "10px sans-serif";
     this.ctx.fillStyle = 'black';
     this.ctx.fillText("Your Time: " + (new Date().getTime() - this.startTime)/1000, 10, 20);
   }
