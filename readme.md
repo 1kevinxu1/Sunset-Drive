@@ -2,7 +2,7 @@
 
 [Live link][github-pages]
 
-[github-pages]: http://1kevinxu1.github.io
+[github-pages]: http://1kevinxu1.github.io/Sunset-Drive
 
 ## An Original Javascript Game
 Sunset Racer is a game built almost entirely on vanilla javascript, canvas, and
